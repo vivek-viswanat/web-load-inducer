@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.quarkus.io/build-timestamp: 2021-08-16 - 08:11:28 +0000
+  labels:
+    app.kubernetes.io/name: jvm-load-inducer-service
+    app.kubernetes.io/part-of: jvm-load-inducer
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: jvm-load-inducer
+spec:
+  ports:
+    - name: http
+      port: 8085
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: jvm-load-inducer
+    app.kubernetes.io/part-of: jvm-load-inducer
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.quarkus.io/build-timestamp: 2021-08-16 - 08:11:28 +0000
+  labels:
+    app.kubernetes.io/part-of: jvm-load-inducer
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app.kubernetes.io/name: jvm-load-inducer
+  name: jvm-load-inducer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: jvm-load-inducer
+      app.kubernetes.io/version: 1.0.0-SNAPSHOT
+      app.kubernetes.io/name: jvm-load-inducer
+  template:
+    metadata:
+      annotations:
+        app.quarkus.io/build-timestamp: 2021-08-16 - 08:11:28 +0000
+      labels:
+        app.kubernetes.io/part-of: jvm-load-inducer
+        app.kubernetes.io/version: 1.0.0-SNAPSHOT
+        app.kubernetes.io/name: jvm-load-inducer
+    spec:
+      containers:
+        - env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          image: viswanat/jvm-load-inducer:latest
+          imagePullPolicy: Never
+          name: jvm-load-inducer
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 64Mi
